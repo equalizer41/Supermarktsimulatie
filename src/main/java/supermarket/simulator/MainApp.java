@@ -29,7 +29,7 @@ public class MainApp extends Application {
         // int voor afronding, aantal kolomnmen/rijen berekenen door breedte te delen door vakjes grootte
         int cols = (int) (scene.getWidth() / cellSize);
         int rows = (int) (scene.getHeight() / cellSize);
-
+        // alles
         Grid grid = new Grid(cols, rows, cellSize);
         controller.setGrid(grid);
 
