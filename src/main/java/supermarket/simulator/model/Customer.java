@@ -83,7 +83,7 @@ public class Customer extends Person implements HasInventory {
     }
 
     // ----------------------
-    // Hulpfuncties
+    // Hulpfuncties plus
     // ----------------------
 
     private void moveTowards(int targetX, int targetY, Grid grid) {
