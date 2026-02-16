@@ -6,6 +6,12 @@ import java.util.ArrayList;
 public class Inventory {
     private List<Item> items;
 
+    // Nieuwe lege constructor
+    public Inventory() {
+        this.items = new ArrayList<>();
+    }
+
+    // Bestaande constructor
     public Inventory(List<Item> items) {
         this.items = new ArrayList<>(items);
     }

@@ -6,7 +6,6 @@ import javafx.scene.image.Image;
 public class Tile {
     private boolean walkable;
     private boolean occupied;
-    private Color color;
     private Image image;
     private Image floorTexture;
     private int widthInCells;
@@ -23,16 +22,14 @@ public class Tile {
         Entrance
     }
 
-    public Tile(boolean walkable, Color color, Image image, int widthInCells, int heightInCells) {
+    public Tile(boolean walkable, Image image, int widthInCells, int heightInCells) {
         this.walkable = walkable;
-        this.color = color;
         this.image = image;
         this.widthInCells = widthInCells;
         this.heightInCells = heightInCells;
         this.floorTexture = null;
     }
 
-    public Color getColor() { return color; }
     public boolean isWalkable() { return walkable; }
     public void setWalkable(boolean walkable) { this.walkable = walkable; }
     public boolean isOccupied() { return occupied; }
