@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.geometry.Insets?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="supermarket.simulator.controller.Controller"
-      alignment="CENTER" spacing="10">
-    <Canvas fx:id="canvas" width="1024" height="768"/>
-</VBox>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="supermarket.simulator.controller.Controller"
+            prefHeight="1200" prefWidth="1500">
+
+    <padding>
+        <Insets top="40" right="40" bottom="40" left="40"/>
+    </padding>
+
+    <center>
+        <Canvas fx:id="canvas" width="1500" height="1100" />
+    </center>
+
+</BorderPane>
