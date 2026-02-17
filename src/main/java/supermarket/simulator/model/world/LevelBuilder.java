@@ -1,8 +1,8 @@
-package supermarket.simulator.services;
+package supermarket.simulator.model.world;
 
 import supermarket.simulator.model.*;
-import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
+import supermarket.simulator.services.TilesetLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -174,7 +174,7 @@ public class LevelBuilder {
      */
     private void placeRefrigerators() {
         // Example placement - you can customize this
-        Image fridgeSprite = loader.getNamedTile("floor"); // Replace with actual fridge sprite
+        Image fridgeSprite = loader.getNamedTile("fridge"); // Replace with actual fridge sprite
         int width = grid.getWidth();
         int height = grid.getHeight();
 
@@ -193,7 +193,7 @@ public class LevelBuilder {
      * Places shelves throughout the supermarket
      */
     private void placeShelves() {
-        Image shelfSprite = loader.getNamedTile("floor"); // Replace with actual shelf sprite
+        Image shelfSprite = loader.getNamedTile("vertshelf"); // Replace with actual shelf sprite
         int width = grid.getWidth();
         int height = grid.getHeight();
         int startY = 8;
@@ -222,11 +222,12 @@ public class LevelBuilder {
      * Places storage room in the back
      */
     private void placeStorage() {
-        Image storageSprite = loader.getNamedTile("floor"); // Replace with actual storage sprite
+        Image storageSprite = loader.getNamedTile("storage");
         int width = grid.getWidth();
+        int height = grid.getHeight();
 
         // Place storage in back corner
-        Storage mainStorage = new Storage(2, 2, 3, 3, storageSprite, 1000);
+        Storage mainStorage = new Storage(1, 1, 18 , 4, storageSprite, 1000);
         mainStorage.placeOnGrid(grid);
         storageRooms.add(mainStorage);
     }

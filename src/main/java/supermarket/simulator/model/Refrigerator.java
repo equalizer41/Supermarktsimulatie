@@ -1,7 +1,8 @@
 package supermarket.simulator.model;
 
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
+import supermarket.simulator.model.world.Grid;
+import supermarket.simulator.model.world.Tile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +43,10 @@ public class Refrigerator extends SupermarketObject {
     }
 
     /**
-     * Simplified constructor
+     * constructor
      */
     public Refrigerator(int x, int y, Image sprite, RefrigeratorType type) {
-        this(x, y, 1, 2, sprite, type, 40);
+        this(x, y, 3, 2, sprite, type, 40);
     }
 
     @Override

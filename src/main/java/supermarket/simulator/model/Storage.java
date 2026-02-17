@@ -1,7 +1,8 @@
 package supermarket.simulator.model;
 
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
+import supermarket.simulator.model.world.Grid;
+import supermarket.simulator.model.world.Tile;
 
 import java.util.HashMap;
 import java.util.Map;

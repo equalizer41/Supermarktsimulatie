@@ -1,7 +1,7 @@
 package supermarket.simulator;
 
 import supermarket.simulator.controller.Controller;
-import supermarket.simulator.model.Grid;
+import supermarket.simulator.model.world.Grid;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;

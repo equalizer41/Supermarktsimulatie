@@ -1,6 +1,5 @@
-package supermarket.simulator.model;
+package supermarket.simulator.model.world;
 
-import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
 
 public class Tile {
