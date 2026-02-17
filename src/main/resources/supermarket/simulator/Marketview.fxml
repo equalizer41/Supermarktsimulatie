@@ -2,12 +2,21 @@
 
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.Button?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.HBox?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="supermarket.simulator.controller.Controller"
             prefHeight="1200" prefWidth="1500">
+
+    <top>
+        <HBox>
+            <Button fx:id="debugButton" text=" Debug ON" onAction="#toggleDebug"/>
+        </HBox>
+    </top>
 
     <padding>
         <Insets top="40" right="40" bottom="40" left="40"/>
@@ -16,5 +25,7 @@
     <center>
         <Canvas fx:id="canvas" width="1500" height="1100" />
     </center>
+
+
 
 </BorderPane>

@@ -8,6 +8,8 @@ import supermarket.simulator.services.TilesetLoader;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.Button;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,11 +26,18 @@ public class Controller {
     private Grid grid;
     private GridRenderer renderer;
     private final TilesetLoader loader = new TilesetLoader();
-
     private LevelBuilder levelBuilder;
     private final List<Customer> customers = new ArrayList<>();
     private int customerIdCounter = 0;
 
+    @FXML
+    private Button debugButton;
+
+    @FXML
+    private void toggleDebug() {
+        GridRenderer.DEBUG = !GridRenderer.DEBUG;
+        debugButton.setText(GridRenderer.DEBUG ? "Debug ON" : "Debug OFF");
+    }
     @FXML
     private Canvas canvas;
 
@@ -80,12 +89,15 @@ public class Controller {
         customer.startShopping();
         customers.add(customer);
 
-        System.out.println("Spawned customer #" + customerIdCounter);
+        System.out.println("Spawned customer #" + customerIdCounter
+                + " | route: shelf[" + shelf1.getAccessX() + "," + shelf1.getAccessY() + "]"
+                + " -> shelf[" + shelf2.getAccessX() + "," + shelf2.getAccessY() + "]"
+                + " -> checkout[" + checkout.getAccessX() + "," + checkout.getAccessY() + "]"
+                + " -> exit[" + exit.getAccessX() + "," + exit.getAccessY() + "]");
     }
 
     public void tick() {
         tickCount++;
-        System.out.println("Tick #" + tickCount);
 
         if (scheduledActions.containsKey(tickCount)) {
             scheduledActions.get(tickCount).run();
@@ -101,7 +113,15 @@ public class Controller {
             c.update(grid);
         }
 
-        customers.removeIf(c -> !c.isActive());
+        // Log en verwijder inactieve customers
+        customers.removeIf(c -> {
+            if (!c.isActive()) {
+                System.out.println("[Tick " + tickCount + "] Customer #" + c.getId()
+                        + " removed from simulation.");
+                return true;
+            }
+            return false;
+        });
 
         draw();
     }

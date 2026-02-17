@@ -43,12 +43,18 @@ public class TilesetLoader {
         namedTiles.put("wall_top",    getTile(16, 0));
         namedTiles.put("wall_bottom_top", getTile(112, 0));
         namedTiles.put("wall_bottom_ground", getTile(14, 128));
+        namedTiles.put("wall_storage", getTallTile(14,123));
+        namedTiles.put("background_storage", getTile(16, 144));
+
 
         // Misc.
         namedTiles.put("floor",       getTile(96,80));
+        namedTiles.put("storage_floor",       getTile(96,96));
         namedTiles.put("entrance",       getTile(32,144));
         namedTiles.put("exit",       getTile(32,144));
         namedTiles.put("storage",       getTile(96,96));
+        namedTiles.put("storage_entrance",       getTile(96,112));
+
 
         //Objecten
         namedTiles.put("checkout",  getDoubleVertTile(96,0));
@@ -74,7 +80,9 @@ public class TilesetLoader {
     public Image getFridgeTile(int x, int y){
         return getTile(x,y, 48,32);
     }
-
+    public Image getTallTile(int x, int y){
+        return getTile(x,y,16,21);
+    }
     // Methode om tile op naam op te halen
     public Image getNamedTile(String name) {
         return namedTiles.get(name);

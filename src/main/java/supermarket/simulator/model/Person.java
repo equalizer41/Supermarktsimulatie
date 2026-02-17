@@ -1,7 +1,7 @@
 package supermarket.simulator.model;
 
 import supermarket.simulator.model.enums.Direction;
-import supermarket.simulator.Pathfinding.AStarPathfinder;
+import supermarket.simulator.Pathfinding.GridSearch;
 import supermarket.simulator.Pathfinding.TileReservationSystem;
 import supermarket.simulator.model.world.Grid;
 import supermarket.simulator.services.CharacterSpriteLoader;
@@ -41,7 +41,7 @@ public abstract class Person {
     private double visualY;
 
     // Pathfinding
-    private final AStarPathfinder       pathfinder;
+    private final GridSearch pathfinder;
     private final TileReservationSystem reservations;
     private List<int[]> path;
     private int goalX;
@@ -71,7 +71,7 @@ public abstract class Person {
         this.visualY      = startY;
         this.priority     = priority;
         this.spriteLoader = spriteLoader;
-        this.pathfinder   = new AStarPathfinder(grid);
+        this.pathfinder   = new GridSearch(grid);
         this.reservations = TileReservationSystem.getInstance();
         this.hasGoal      = false;
         this.blockedTicks = 0;

@@ -10,13 +10,14 @@ import java.util.List;
 public class Exit extends SupermarketObject {
 
     private static final int MAX_PER_TICK = 3;
-
+    private int totalCustomersExited;
     private int totalExited = 0;
     private final List<Customer> exitQueue = new ArrayList<>();
     private boolean open = true;
 
     public Exit(int x, int y, Image sprite) {
         super(x, y, 1, 1, true, sprite, "Exit");
+        this.totalCustomersExited = 0;
     }
 
     @Override
@@ -51,14 +52,6 @@ public class Exit extends SupermarketObject {
         System.out.println("Customer #" + totalExited + " exited the supermarket");
     }
 
-    public boolean hasReached(Customer customer) {
-        return customer.getTileX() == x && customer.getTileY() == y;
-    }
+    public int getTotalCustomersExited() { return totalCustomersExited; }
 
-    public void open()  { open = true; }
-    public void close() { open = false; }
-
-    public boolean isOpen()          { return open; }
-    public int getTotalExited()      { return totalExited; }
-    public int getExitQueueSize()    { return exitQueue.size(); }
 }

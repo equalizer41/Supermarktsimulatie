@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class GridRenderer {
 
-    private static final boolean DEBUG = true; // Zet op false om debug info te verbergen
+    public static boolean DEBUG = true;
 
     private final Grid grid;
 
