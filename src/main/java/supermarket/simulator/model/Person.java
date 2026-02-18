@@ -22,10 +22,8 @@ import java.util.List;
  */
 public abstract class Person {
 
-    // Movement constants - no magic numbers
+    // Movement constants
     private static final double ANIMATION_SPEED      = 1; // tiles per tick
-    private static final int    TICKS_UNTIL_REROUTE  = 20;
-    private static final int    TICKS_UNTIL_SIDESTEP = 40;
     private static final int    ANIM_SPEED           = 4;   // ticks per frame wissel
 
     // Direction arrays for 4-way movement (N, E, S, W)
@@ -48,9 +46,6 @@ public abstract class Person {
     private int goalY;
     private boolean hasGoal;
 
-    // Deadlock counter
-    private int blockedTicks;
-
     // Rendering
     protected final CharacterSpriteLoader spriteLoader;
     protected final int priority;
@@ -60,6 +55,9 @@ public abstract class Person {
     private int animFrame       = 0;
     private int animTimer       = 0;
 
+    // update
+    private static final int RECALC_INTERVAL = 5; // elke 5 ticks herberekenen
+    private int recalcTimer = 0;
     // -------------------------------------------------------------------------
     // Constructor
     // -------------------------------------------------------------------------
@@ -74,7 +72,6 @@ public abstract class Person {
         this.pathfinder   = new GridSearch(grid);
         this.reservations = TileReservationSystem.getInstance();
         this.hasGoal      = false;
-        this.blockedTicks = 0;
 
         reservations.reserve(tileX, tileY, this);
     }
@@ -88,11 +85,9 @@ public abstract class Person {
         this.goalX        = goalX;
         this.goalY        = goalY;
         this.hasGoal      = true;
-        this.blockedTicks = 0;
-        this.path         = pathfinder.findPath(tileX, tileY, goalX, goalY);
+        this.path         = pathfinder.findPath(tileX, tileY, goalX, goalY, this);
     }
 
-    /** Call once per game tick. */
     public void update(Grid grid) {
         animateVisualPosition();
         updateDirection();
@@ -100,6 +95,16 @@ public abstract class Person {
 
         if (!hasGoal || path == null || path.isEmpty()) return;
         if (!isAnimationFinished()) return;
+
+        // Periodiek herberekenen zodat kortere routes opgepikt worden
+        recalcTimer++;
+        if (recalcTimer >= RECALC_INTERVAL) {
+            recalcTimer = 0;
+            List<int[]> newPath = pathfinder.findPath(tileX, tileY, goalX, goalY, this);
+            if (newPath != null && !newPath.isEmpty()) {
+                path = newPath;
+            }
+        }
 
         tryStep(grid);
     }
@@ -136,17 +141,6 @@ public abstract class Person {
     // Movement & deadlock
     // -------------------------------------------------------------------------
 
-    private void tryStep(Grid grid) {
-        int[] next = path.getFirst();
-        int nx = next[0], ny = next[1];
-
-        if (reservations.isFree(nx, ny, this)) {
-            step(nx, ny);
-        } else {
-            blockedTicks++;
-            resolveDeadlock(grid);
-        }
-    }
 
     private void step(int nx, int ny) {
         reservations.release(this);
@@ -154,35 +148,26 @@ public abstract class Person {
         tileX = nx;
         tileY = ny;
         path.removeFirst();
-        blockedTicks = 0;
     }
 
-    private void resolveDeadlock(Grid grid) {
-        if (blockedTicks == TICKS_UNTIL_REROUTE) {
-            // Stage 1: find alternative route
-            path = pathfinder.findPath(tileX, tileY, goalX, goalY);
+    private void tryStep(Grid grid) {
+        int[] next = path.getFirst();
+        int nx = next[0], ny = next[1];
 
-        } else if (blockedTicks >= TICKS_UNTIL_SIDESTEP) {
-            // Stage 2: force a sidestep onto any free adjacent tile
-            sidestep(grid);
-            blockedTicks = 0;
+        if (!reservations.isFree(nx, ny, this)) {
+            // Volgende stap is bezet: herbereken direct
+            path = pathfinder.findPath(tileX, tileY, goalX, goalY, this);
+            if (path == null || path.isEmpty()) return;
+            next = path.getFirst();
+            nx   = next[0];
+            ny   = next[1];
         }
-        // Stage 0 (< TICKS_UNTIL_REROUTE): just wait
-    }
 
-    private void sidestep(Grid grid) {
-        for (int i = 0; i < DX.length; i++) {
-            int sx = tileX + DX[i];
-            int sy = tileY + DY[i];
-
-            if (isWalkable(grid, sx, sy) && reservations.isFree(sx, sy, this)) {
-                step(sx, sy);
-                path = pathfinder.findPath(tileX, tileY, goalX, goalY);
-                return;
-            }
+        if (reservations.isFree(nx, ny, this)) {
+            step(nx, ny);
         }
+        // Nog steeds bezet na herberekening: wacht tot volgende tick
     }
-
     // -------------------------------------------------------------------------
     // Sprite animation
     // -------------------------------------------------------------------------
@@ -235,6 +220,10 @@ public abstract class Person {
     // Helper
     // -------------------------------------------------------------------------
 
+    /** Geeft het huidige pad terug (voor debug visualisatie). */
+    public List<int[]> getPath() {
+        return path;
+    }
     private boolean isWalkable(Grid grid, int x, int y) {
         if (x < 0 || x >= grid.getWidth() || y < 0 || y >= grid.getHeight()) return false;
         var tile = grid.getTile(x, y);

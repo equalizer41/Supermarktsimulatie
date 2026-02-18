@@ -31,7 +31,7 @@ public class TilesetLoader {
         return new WritableImage(reader, x, y, width, height);
     }
     private void loadNamedTiles() {
-        // Definieer je tiles met namen en coördinaten
+        // Definieren van tiles met namen en coördinaten
         namedTiles.put("wallcorner_topleft",     getTile(0, 0));
         namedTiles.put("wallcorner_topright",    getTile(32, 0));
         namedTiles.put("wallcorner_bottomleft",  getTile(48,144));
@@ -46,7 +46,6 @@ public class TilesetLoader {
         namedTiles.put("wall_storage", getTallTile(14,123));
         namedTiles.put("background_storage", getTile(16, 144));
 
-
         // Misc.
         namedTiles.put("floor",       getTile(96,80));
         namedTiles.put("storage_floor",       getTile(96,96));
@@ -54,7 +53,9 @@ public class TilesetLoader {
         namedTiles.put("exit",       getTile(32,144));
         namedTiles.put("storage",       getTile(96,96));
         namedTiles.put("storage_entrance",       getTile(96,112));
-
+        namedTiles.put("storage_entrance_leftside",       getTallTile(12,123));
+        namedTiles.put("storage_entrance_rightside",       getTallTile(20,123));
+        namedTiles.put("storage_rack",       getStorageRackTile(48,98));
 
         //Objecten
         namedTiles.put("checkout",  getDoubleVertTile(96,0));
@@ -79,6 +80,9 @@ public class TilesetLoader {
     }
     public Image getFridgeTile(int x, int y){
         return getTile(x,y, 48,32);
+    }
+    public Image getStorageRackTile(int x, int y){
+        return getTile(x,y, 48,21);
     }
     public Image getTallTile(int x, int y){
         return getTile(x,y,16,21);

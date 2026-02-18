@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Represents a storage room where inventory is kept before being stocked on shelves
  */
-public class Storage extends SupermarketObject {
+public class StorageShelf extends SupermarketObject {
     private Map<String, Integer> inventory; // Category -> quantity
     private int maxCapacity;
     private boolean isLocked;
@@ -24,17 +24,14 @@ public class Storage extends SupermarketObject {
      * @param sprite Storage sprite
      * @param maxCapacity Maximum total items that can be stored
      */
-    public Storage(int x, int y, int width, int height, Image sprite, int maxCapacity) {
-        super(x, y, width, height, false, sprite, "Storage");
-        this.inventory = new HashMap<>();
+    public StorageShelf(int x, int y, int width, int height, Image sprite, int maxCapacity) {
+        super(x, y, width, height, false, sprite, "StorageShelf");
+        this.inventory   = new HashMap<>();
         this.maxCapacity = maxCapacity;
-        this.isLocked = true; // Storage is not accessible to customers
+        this.isLocked    = true;
     }
 
-    /**
-     * Simplified constructor
-     */
-    public Storage(int x, int y, int width, int height, Image sprite) {
+    public StorageShelf(int x, int y, int width, int height, Image sprite) {
         this(x, y, width, height, sprite, 1000);
     }
 

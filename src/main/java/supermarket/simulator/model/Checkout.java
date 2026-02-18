@@ -32,6 +32,20 @@ public class Checkout extends SupermarketObject {
     public void placeOnGrid(Grid grid) {
         Tile checkoutTile = new Tile(true, sprite, width, height);
         grid.setLargeTile(x, y, checkoutTile);
+
+        // Label de access tile
+        Tile access = grid.getTile(getAccessX(), getAccessY());
+        if (access != null) access.setLabel("Access");
+
+        // Label de employee tile
+        Tile emp = grid.getTile(getEmployeeX(), getEmployeeY());
+        if (emp != null) emp.setLabel("Employee");
+
+        // Label de wachtrij-tiles (bijv. 3 posities)
+        for (int i = 0; i < 3; i++) {
+            Tile q = grid.getTile(getQueueX(i), getQueueY(i));
+            if (q != null) q.setLabel("Queue");
+        }
     }
 
     @Override
@@ -47,6 +61,18 @@ public class Checkout extends SupermarketObject {
             startProcessingNextCustomer();
         }
     }
+
+    /** Tile waar de employee staat tijdens afrekenen (rechts van de kassa) */
+    public int getEmployeeX() { return x + 1; }
+    public int getEmployeeY() { return y + 1; }  // midden van het 1x2 object
+
+    /** Startpositie van de wachtrij (links van de kassa, onderste rij) */
+    public int getQueueStartX() { return x - 1; }
+    public int getQueueStartY() { return y + height; }  // zelfde hoogte als access tile
+
+    /** Geeft de wachtpositie voor de n-de persoon in de rij (groeit naar boven) */
+    public int getQueueX(int position) { return x - 1; }
+    public int getQueueY(int position) { return (y + height - 1) - position; }
 
     /** Checkout is 1x2 — access tile is direct eronder */
     @Override

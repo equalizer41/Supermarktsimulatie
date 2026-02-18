@@ -9,17 +9,8 @@ public class Tile {
     private Image floorTexture;
     private int widthInCells;
     private int heightInCells;
+    private String label;  // Debug label (bijv. "Checkout", "Queue", "Employee")
 
-    public enum TileType {
-        Wall,
-        Door,
-        Floor,
-        Shelves,
-        Register,
-        Counter,
-        Fridge,
-        Entrance
-    }
 
     public Tile(boolean walkable, Image image, int widthInCells, int heightInCells) {
         this.walkable = walkable;
@@ -27,7 +18,11 @@ public class Tile {
         this.widthInCells = widthInCells;
         this.heightInCells = heightInCells;
         this.floorTexture = null;
+        this.label = null;
     }
+
+    public String getLabel()            { return label; }
+    public void   setLabel(String label){ this.label = label; }
 
     public boolean isWalkable() { return walkable; }
     public void setWalkable(boolean walkable) { this.walkable = walkable; }

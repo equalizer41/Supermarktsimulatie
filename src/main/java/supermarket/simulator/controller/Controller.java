@@ -19,7 +19,7 @@ import java.util.Map;
 public class Controller {
 
     private static final int MAX_CUSTOMERS  = 5;
-    private static final int SPAWN_INTERVAL = 50;
+    private static final int SPAWN_INTERVAL = 5;
 
     private int tickCount = 0;
     private final Map<Integer, Runnable> scheduledActions = new HashMap<>();

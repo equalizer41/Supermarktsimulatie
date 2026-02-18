@@ -19,7 +19,7 @@ public class LevelBuilder {
     private List<Shelf> shelves;
     private List<Checkout> checkouts;
     private List<Refrigerator> refrigerators;
-    private List<Storage> storageRooms;
+    private List<StorageShelf> storageshelves;
     private Entrance entrance;
     private Exit exit;
 
@@ -37,8 +37,12 @@ public class LevelBuilder {
     private static final int STORAGE_BG_START_Y  = 2;
     private static final int STORAGE_BG_END_Y    = 6;
     private static final int STORAGE_ENTRANCE_Y  = 7;
-    private static final int STORAGE_ENTRANCE_X1 = 9;
+    private static final int STORAGE_ENTRANCE_X1 = 8;
     private static final int STORAGE_ENTRANCE_X2 = 11;
+    private static final int STORAGE_ENTRANCE_LEFTCORNER = 8;
+    private static final int STORAGE_ENTRANCE_RIGHTCORNER = 12;
+
+
 
     public LevelBuilder(Grid grid, TilesetLoader loader) {
         this.grid = grid;
@@ -46,7 +50,8 @@ public class LevelBuilder {
         this.shelves = new ArrayList<>();
         this.checkouts = new ArrayList<>();
         this.refrigerators = new ArrayList<>();
-        this.storageRooms = new ArrayList<>();
+        this.storageshelves = new ArrayList<>();
+
     }
 
     /**
@@ -59,7 +64,8 @@ public class LevelBuilder {
         placeCheckouts();
         placeRefrigerators();
         placeShelves();
-        //placeStorage();
+        placeStorageShelves();
+
     }
 
     /**
@@ -137,20 +143,26 @@ public class LevelBuilder {
 
     }
     private void buildStorageBackground() {
-        Image bgSprite       = loader.getNamedTile("storage_floor");
-        Image entranceSprite = loader.getNamedTile("storage_entrance");
+        Image storage_floor       = loader.getNamedTile("storage_floor");
+        Image storage_entrance = loader.getNamedTile("storage_entrance");
+        Image storage_entrance_rightside = loader.getNamedTile("storage_entrance_rightside");
+        Image storage_entrance_leftside = loader.getNamedTile("storage_entrance_leftside");
 
         // Vul het rechthoekige achtergrondgebied
         for (int y = STORAGE_BG_START_Y; y <= STORAGE_BG_END_Y; y++) {
             for (int x = STORAGE_BG_START_X; x <= STORAGE_BG_END_X; x++) {
-                grid.setTile(x, y, new Tile(false, bgSprite, 1, 1));
+                grid.setTile(x, y, new Tile(true, storage_floor, 1, 1));
             }
         }
 
         // Plaats de 3 entrance tiles op rij 7
         for (int x = STORAGE_ENTRANCE_X1; x <= STORAGE_ENTRANCE_X2; x++) {
-            grid.setTile(x, STORAGE_ENTRANCE_Y, new Tile(true, entranceSprite, 1, 1));
+            grid.setTile(x, STORAGE_ENTRANCE_Y, new Tile(true, storage_entrance, 1, 1));
         }
+
+        grid.setTile(STORAGE_ENTRANCE_LEFTCORNER, STORAGE_ENTRANCE_Y, new Tile(true,storage_entrance_rightside , 1, 1));
+        grid.setTile(STORAGE_ENTRANCE_RIGHTCORNER, STORAGE_ENTRANCE_Y, new Tile(true,storage_entrance_leftside , 1, 1));
+
     }
 
     private void buildBottomWalls() {
@@ -186,6 +198,15 @@ public class LevelBuilder {
     /**
      * Places entrance and exit using the new object classes
      */
+
+    private void placeStorageShelves(){
+        Image storage_rack = loader.getNamedTile("storage_rack");
+
+        StorageShelf storageShelf1= new StorageShelf(2, 3, 4, 1, storage_rack);
+
+        storageShelf1.placeOnGrid(grid);
+
+    }
     private void placeEntranceAndExit() {
         Image exitSprite = loader.getNamedTile("exit");
         Image entranceSprite = loader.getNamedTile("entrance");
@@ -296,8 +317,8 @@ public class LevelBuilder {
         return new ArrayList<>(refrigerators);
     }
 
-    public List<Storage> getStorageRooms() {
-        return new ArrayList<>(storageRooms);
+    public List<StorageShelf> getStorageRooms() {
+        return new ArrayList<>(storageshelves);
     }
 
     public Entrance getEntrance() {
