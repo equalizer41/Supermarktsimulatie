@@ -40,23 +40,21 @@ public class GridRenderer {
         gc.setImageSmoothing(false);
 
         drawFloors(gc);
-        drawLargeTiles(gc);
 
         if (DEBUG && DEBUG_PATHS) {
-            drawDebugPaths(gc, persons);    // onder sprites tekenen
+            drawDebugPaths(gc, persons);
         }
 
-        drawPersons(gc, persons);
+        // Y-sorted rendering: per rij tiles dan persons
+        drawLayered(gc, persons);
 
         if (DEBUG && DEBUG_GRID) {
             drawDebugOverlay(gc);
         }
     }
 
-
-
     // -------------------------------------------------------------------------
-    // Fase 1: Floors
+    // Fase 1: Floors (altijd als onderste laag)
     // -------------------------------------------------------------------------
 
     private void drawFloors(GraphicsContext gc) {
@@ -80,43 +78,66 @@ public class GridRenderer {
     }
 
     // -------------------------------------------------------------------------
-    // Fase 2: Multi-cell objecten (kasten, kassa's, etc.)
+    // Fase 2+3: Y-gesorteerd: per rij eerst objecten dan persons
     // -------------------------------------------------------------------------
 
-    private void drawLargeTiles(GraphicsContext gc) {
+    private void drawLayered(GraphicsContext gc, List<? extends Person> persons) {
         int cellSize = grid.getCellSize();
 
-        for (int x = 0; x < grid.getWidth(); x++) {
-            for (int y = 0; y < grid.getHeight(); y++) {
-                Tile tile     = grid.getTile(x, y);
-                double pixelX = x * cellSize;
-                double pixelY = y * cellSize;
+        for (int y = 0; y < grid.getHeight(); y++) {
 
-                if (tile.getImage() != null &&
-                        (tile.getWidthInCells() > 1 || tile.getHeightInCells() > 1)) {
+            // -- Stap A: teken ALLEEN large tile origins op rij y --
+            for (int x = 0; x < grid.getWidth(); x++) {
+                Tile tile = grid.getTile(x, y);
 
-                    int tileWidthPixels  = tile.getWidthInCells() * cellSize;
-                    int tileHeightPixels = tile.getHeightInCells() * cellSize;
-                    gc.drawImage(tile.getImage(), pixelX, pixelY, tileWidthPixels, tileHeightPixels);
+                if (tile.getImage() == null) continue;
+                if (tile.getWidthInCells() <= 1 && tile.getHeightInCells() <= 1) continue;
+
+                double srcWidth   = tile.getImage().getWidth();
+                double srcHeight  = tile.getImage().getHeight();
+                double drawWidth  = tile.getWidthInCells() * cellSize;
+                double scale      = drawWidth / srcWidth;
+                double drawHeight = srcHeight * scale;
+
+                double tileBottomY = (y + tile.getHeightInCells()) * cellSize;
+                double drawY       = tileBottomY - drawHeight;
+
+                gc.drawImage(tile.getImage(), x * cellSize, drawY, drawWidth, drawHeight);
+            }
+
+            // -- Stap A2: teken 1x1 tiles waarvan de image hoger is dan 1 cel --
+            for (int x = 0; x < grid.getWidth(); x++) {
+                Tile tile = grid.getTile(x, y);
+
+                if (tile.getImage() == null) continue;
+                if (tile.getWidthInCells() != 1 || tile.getHeightInCells() != 1) continue;
+
+                double srcWidth   = tile.getImage().getWidth();
+                double srcHeight  = tile.getImage().getHeight();
+                double drawWidth  = cellSize;
+                double scale      = drawWidth / srcWidth;
+                double drawHeight = srcHeight * scale;
+
+                // Alleen tekenen als de image significant groter is dan 1 cel
+                if (drawHeight <= cellSize + 2) continue;
+
+                // Onderkant uitgelijnd met bodem van de tile
+                double drawY = (y + 1) * cellSize - drawHeight;
+
+                gc.drawImage(tile.getImage(), x * cellSize, drawY, drawWidth, drawHeight);
+            }
+
+            // -- Stap B: teken persons op rij y --
+            for (Person p : persons) {
+                if (p.getTileY() == y) {
+                    p.draw(gc, cellSize);
                 }
             }
         }
     }
 
-
     // -------------------------------------------------------------------------
-    // Fase 3: Persons (customers, employees)
-    // -------------------------------------------------------------------------
-
-    private void drawPersons(GraphicsContext gc, List<? extends Person> persons) {
-        int cellSize = grid.getCellSize();
-        for (Person p : persons) {
-            p.draw(gc, cellSize);
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // [DEBUG] Fase 3b: Route-visualisatie per persoon
+    // [DEBUG] Route-visualisatie per persoon
     // -------------------------------------------------------------------------
 
     private void drawDebugPaths(GraphicsContext gc, List<? extends Person> persons) {
@@ -130,7 +151,6 @@ public class GridRenderer {
 
             Color color = PATH_COLORS[i % PATH_COLORS.length];
 
-            // --- Lijn van huidige positie door alle stappen ---
             gc.setStroke(color);
             gc.setLineWidth(2.5);
 
@@ -145,7 +165,6 @@ public class GridRenderer {
                 fromY = toY;
             }
 
-            // --- Stip op elke tussenstap ---
             gc.setFill(color);
             for (int[] step : path) {
                 double cx = step[0] * cellSize + half;
@@ -153,7 +172,6 @@ public class GridRenderer {
                 gc.fillOval(cx - 3, cy - 3, 6, 6);
             }
 
-            // --- Kruis-in-cirkel op het doel ---
             int[]  goal = path.get(path.size() - 1);
             double gx   = goal[0] * cellSize + half;
             double gy   = goal[1] * cellSize + half;
@@ -168,21 +186,20 @@ public class GridRenderer {
     }
 
     // -------------------------------------------------------------------------
-    // [DEBUG] Fase 4: Grid overlay (grid lijnen, coordinaten, walkable/occupied)
+    // [DEBUG] Grid overlay
     // -------------------------------------------------------------------------
 
     private void drawDebugOverlay(GraphicsContext gc) {
         int cellSize = grid.getCellSize();
 
-        // Label-kleur per naam
         java.util.Map<String, Color> labelColors = new java.util.HashMap<>();
-        labelColors.put("Checkout",  Color.color(0.2, 0.6, 1.0));   // blauw
-        labelColors.put("Queue",     Color.color(1.0, 0.6, 0.0));   // oranje
-        labelColors.put("Employee",  Color.color(0.2, 0.9, 0.2));   // groen
-        labelColors.put("Access",    Color.color(0.8, 0.0, 0.8));   // paars
-        labelColors.put("Shelf",     Color.color(0.6, 0.4, 0.1));   // bruin
-        labelColors.put("Entrance",  Color.color(0.0, 0.9, 0.7));   // teal
-        labelColors.put("Exit",      Color.color(1.0, 0.3, 0.3));   // rood
+        labelColors.put("Checkout",  Color.color(0.2, 0.6, 1.0));
+        labelColors.put("Queue",     Color.color(1.0, 0.6, 0.0));
+        labelColors.put("Employee",  Color.color(0.2, 0.9, 0.2));
+        labelColors.put("Access",    Color.color(0.8, 0.0, 0.8));
+        labelColors.put("Shelf",     Color.color(0.6, 0.4, 0.1));
+        labelColors.put("Entrance",  Color.color(0.0, 0.9, 0.7));
+        labelColors.put("Exit",      Color.color(1.0, 0.3, 0.3));
 
         for (int x = 0; x < grid.getWidth(); x++) {
             for (int y = 0; y < grid.getHeight(); y++) {
@@ -190,17 +207,14 @@ public class GridRenderer {
                 double pixelX = x * cellSize;
                 double pixelY = y * cellSize;
 
-                // Grid lijnen
                 gc.setStroke(Color.DARKGRAY);
                 gc.setLineWidth(0.5);
                 gc.strokeRect(pixelX, pixelY, cellSize, cellSize);
 
-                // Coordinaten
                 gc.setFill(Color.BLACK);
                 gc.setFont(new Font("Arial", 7));
                 gc.fillText("[" + x + "," + y + "]", pixelX + 1, pixelY + 9);
 
-                // Rode X voor niet-walkable
                 if (!tile.isWalkable()) {
                     gc.setStroke(Color.RED);
                     gc.setLineWidth(1.5);
@@ -211,7 +225,6 @@ public class GridRenderer {
                     gc.strokeLine(startX + size, startY, startX, startY + size);
                 }
 
-                // Gele O voor occupied
                 if (tile.isOccupied()) {
                     gc.setStroke(Color.YELLOW);
                     gc.setLineWidth(1.5);
@@ -221,21 +234,14 @@ public class GridRenderer {
                     gc.strokeOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
                 }
 
-                // ← Nieuw: gekleurd label + gekleurde rand als tile een label heeft
                 String label = tile.getLabel();
                 if (label != null) {
                     Color c = labelColors.getOrDefault(label, Color.WHITE);
-
-                    // Gekleurde semi-transparante achtergrond
                     gc.setFill(Color.color(c.getRed(), c.getGreen(), c.getBlue(), 0.25));
                     gc.fillRect(pixelX + 1, pixelY + 1, cellSize - 2, cellSize - 2);
-
-                    // Gekleurde rand
                     gc.setStroke(c);
                     gc.setLineWidth(1.5);
                     gc.strokeRect(pixelX + 1, pixelY + 1, cellSize - 2, cellSize - 2);
-
-                    // Label tekst onderaan de tile
                     gc.setFill(c);
                     gc.setFont(new Font("Arial", 6));
                     gc.fillText(label, pixelX + 2, pixelY + cellSize - 2);

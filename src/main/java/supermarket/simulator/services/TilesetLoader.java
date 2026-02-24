@@ -56,11 +56,15 @@ public class TilesetLoader {
         namedTiles.put("storage_entrance_leftside",       getTallTile(12,123));
         namedTiles.put("storage_entrance_rightside",       getTallTile(20,123));
         namedTiles.put("storage_rack",       getStorageRackTile(48,98));
+        namedTiles.put("storage_rack_leftborder", getTile(80, 137));
+        namedTiles.put("storage_rack_rightborder", getTile(96,137));
+        namedTiles.put("storage_rack_bottomborder", getTile(112,16));
 
         //Objecten
         namedTiles.put("checkout",  getDoubleVertTile(96,0));
         namedTiles.put("vertshelf", getQuadVertTile(0,48));
         namedTiles.put("fridge", getFridgeTile(48,64));
+        namedTiles.put("freezer", getStorageRackTile(48,0));
 
     }
     /**
@@ -91,6 +95,7 @@ public class TilesetLoader {
     public Image getNamedTile(String name) {
         return namedTiles.get(name);
     }
+
 
 
 }

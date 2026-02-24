@@ -57,6 +57,11 @@ public class Refrigerator extends SupermarketObject {
         } else {
             grid.setTile(x, y, fridgeTile);
         }
+
+        // labeling access tiles
+        for (int[] coord : getAccessCoordinatesHoriObjBottom()) {
+            grid.getTile(coord[0], coord[1]).setLabel("Access");
+        }
     }
 
     @Override

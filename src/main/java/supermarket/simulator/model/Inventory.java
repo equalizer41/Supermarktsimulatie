@@ -1,43 +1,34 @@
 package supermarket.simulator.model;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Inventory {
-    private List<Item> items;
+    private final Map<Item, Integer> items;
 
-    // Nieuwe lege constructor
+    //  lege constructor
     public Inventory() {
-        this.items = new ArrayList<>();
-    }
-
-    // Bestaande constructor
-    public Inventory(List<Item> items) {
-        this.items = new ArrayList<>(items);
+        this.items = new HashMap<>();
     }
 
     public void addItem(Item item) {
-        items.add(item);
+        items.put(item, items.getOrDefault(item, 0) + 1);
     }
 
     public void removeItem(Item item) {
-        items.remove(item);
+        if (items.containsKey(item)) {
+            int count = items.get(item);
+            if (count <= 1) {
+                items.remove(item);  // helemaal weghalen
+            } else {
+                items.put(item, count - 1);  // één minder
+            }
+        }
     }
-
-    public boolean hasItem(Item item) {
-        return items.contains(item);
-    }
-
-    public List<Item> getItems() {
-        return new ArrayList<>(items);
-    }
-
     public int getItemCount() {
         return items.size();
-    }
-
-    public double getTotalValue() {
-        return items.stream().mapToDouble(Item::getPrice).sum();
     }
 
     public void clear() {

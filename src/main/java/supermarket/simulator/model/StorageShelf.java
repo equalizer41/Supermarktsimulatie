@@ -13,7 +13,6 @@ import java.util.Map;
 public class StorageShelf extends SupermarketObject {
     private Map<String, Integer> inventory; // Category -> quantity
     private int maxCapacity;
-    private boolean isLocked;
 
     /**
      * Constructor for Storage
@@ -28,7 +27,6 @@ public class StorageShelf extends SupermarketObject {
         super(x, y, width, height, false, sprite, "StorageShelf");
         this.inventory   = new HashMap<>();
         this.maxCapacity = maxCapacity;
-        this.isLocked    = true;
     }
 
     public StorageShelf(int x, int y, int width, int height, Image sprite) {
@@ -42,6 +40,9 @@ public class StorageShelf extends SupermarketObject {
             grid.setLargeTile(x, y, storageTile);
         } else {
             grid.setTile(x, y, storageTile);
+        }
+        for (int[] coord : getAccessCoordinatesHoriObj()){
+            grid.getTile(coord[0], coord[1]).setLabel("Access");
         }
     }
 
@@ -133,27 +134,6 @@ public class StorageShelf extends SupermarketObject {
      */
     public int getQuantity(String category) {
         return inventory.getOrDefault(category, 0);
-    }
-
-    /**
-     * Locks the storage room
-     */
-    public void lock() {
-        isLocked = true;
-        System.out.println("Storage locked");
-    }
-
-    /**
-     * Unlocks the storage room
-     */
-    public void unlock() {
-        isLocked = false;
-        System.out.println("Storage unlocked");
-    }
-
-    // Getters
-    public boolean isLocked() {
-        return isLocked;
     }
 
     public boolean isFull() {

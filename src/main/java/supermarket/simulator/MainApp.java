@@ -36,7 +36,8 @@ public class MainApp extends Application {
         controller.setGrid(grid);
 
         Timeline timeline = new Timeline(
-                new KeyFrame(Duration.seconds(1), event -> controller.tick())
+                new KeyFrame(Duration.millis(100), event -> controller.tick())  // ~20 FPS
+
         );
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();

@@ -15,6 +15,7 @@ public class Shelf extends SupermarketObject {
     private final int maxCapacity;
     private final String category;
 
+
     public Shelf(int x, int y, int width, int height, Image sprite, String category, int maxCapacity) {
         super(x, y, width, height, false, sprite, "Shelf");
         this.category    = category;
@@ -30,6 +31,11 @@ public class Shelf extends SupermarketObject {
         Tile tile = new Tile(false, sprite, width, height);
         if (width > 1 || height > 1) grid.setLargeTile(x, y, tile);
         else grid.setTile(x, y, tile);
+
+        // labeling access tiles
+        for (int[] coord : getAccessCoordinatesVertObj()) {
+            grid.getTile(coord[0], coord[1]).setLabel("Access");
+        }
     }
 
     @Override
@@ -40,6 +46,7 @@ public class Shelf extends SupermarketObject {
             System.out.println("Customer picked up: " + item.getName() + " from " + category + " shelf");
         }
     }
+
 
     public void addItem(Item item) {
         if (items.size() < maxCapacity) items.add(item);

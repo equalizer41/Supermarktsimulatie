@@ -23,8 +23,8 @@ import java.util.List;
 public abstract class Person {
 
     // Movement constants
-    private static final double ANIMATION_SPEED      = 1; // tiles per tick
-    private static final int    ANIM_SPEED           = 4;   // ticks per frame wissel
+    private static final double ANIMATION_SPEED      = 0.15; // tiles per tick
+    private static final int    ANIM_SPEED           = 2;   // ticks per frame wissel
 
     // Direction arrays for 4-way movement (N, E, S, W)
     private static final int[] DX = {0, 1, 0, -1};
@@ -56,8 +56,10 @@ public abstract class Person {
     private int animTimer       = 0;
 
     // update
+
     private static final int RECALC_INTERVAL = 5; // elke 5 ticks herberekenen
     private int recalcTimer = 0;
+
     // -------------------------------------------------------------------------
     // Constructor
     // -------------------------------------------------------------------------
